@@ -1,8 +1,10 @@
 name = "EcodivModeling"
 
 [deps]
+Agents = "46ada45e-f475-11e8-01d0-f70cc89e6671"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+Memoize = "c03570c3-d221-55d1-a50c-7939bbd78826"
 
 [compat]
 DrWatson = "2.12.7"
