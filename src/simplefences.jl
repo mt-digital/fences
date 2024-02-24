@@ -3,33 +3,39 @@
 # 
 # 
 using Agents
+using Distributions
 using Memoize
-using Iterators: filter
+using Parameters
+using Random
 
 
-@enum Species insect bird herbivore carnivore livestock
+@enum Species insect bird herbivore carnivore livestock landholder
 
 # Do not list cattle 
-default_birth_rates = 
-    Dict(insect => 0.2, bird => 0.1, herbivore => 0.05, livestock => 0.05, carnivore => 0.02)
-
-default_init_energy = 
-    Dict(insect => 0.1, bird => 0.4, herbivore => 1, livestock => 2, carnivore => 3)
-
-default_Δenergy = 
-   Dict(insect => .01, bird => 0.04, herbivore => 0.1, livestock => 0.2, carnivore => 0.3)
-
 prey_lookup = Dict(insect => [], bird => [insect], herbivore => [], 
                    livestock => [], carnivore => [herbivore])
 
-@with_kw @agent Critter GridAgent{2} begin
 
+@with_kw mutable struct Landholder
+    
+    id::Int
+    holding::Array{NTuple{2,Int}}
+    livestock::Array{AbstractAgent} = []
+    fence_probability::Float64 = 0.5
+    fenced::Bool = false
+end
+
+
+@with_kw mutable struct Critter <: AbstractAgent
+
+    id::Int 
+    pos::NTuple{2,Int}
     energy::Float64
     Δenergy::Float64
 
     # Birth rate can be a function of grass availability for, 
     # e.g., livestock, insects, birds.
-    birth_rate::Union{Float64,Function}
+    birth_rate::Float64
 
     species::Species
     landowner::Union{Landholder,Nothing} = nothing
@@ -44,19 +50,24 @@ function model_step!(model)
 
     for pos in positions(model)
         # Grow vegetation depending on insects.
-        
-    end
+        c = model.insect_grass_coeff
+        insects_at_pos = length(filter(a -> a.species == insect,
+                                       agents_in_position(pos, model)))
+        curr_grass = model.grass[pos...]
 
+        # Grass grows at least c, but more insects means more pollinators and greater growth.
+        model.grass[pos...] = max(curr_grass + (c * (1 + insects_at_pos)), 1)
+    end
 end
 
 #: Helper function for agent_step to find and eat available prey at agent position.
 function eat_available_prey!(agent, model)
-    if agent.species == carnivore
+    if agent.species == carnivore 
         prey_species = [herbivore, cattle]
     elseif agent.species == bird
         prey_species = [insect]
     else
-        error("agent species, ${agent.species} has no known prey animals")
+        error("agent species, $(agent.species) has no known prey animals")
     end
 
     # find available prey
@@ -103,7 +114,6 @@ function agent_step!(agent, model)
     # ...if it is a carnivore, try to eat herbivore or livestock at location...
     else
         eat_available_prey!(agent, model)
-    
     end
 
     # Lose Δenergy required to live for one time step.
@@ -124,25 +134,20 @@ end
 end
 
 
-@with_kw mutable struct Landholder begin
-    
-    id::Int
-    holding::Array{Tuple{Int,Int}}
-    livestock::Array{Int} = []
-    fence_probability::Function = 0.5
-    fenced::Bool = false
-end
 
 
 function livestock_factory!(model, landholder; 
                            default_energy = 10, default_Δenergy = 0.1)
 
     # Select random point in holding to place cattle.
+    a_idx = length(model.agents) + 1
     pos = rand(landholder.holding)
+    new_critter = Critter(a_idx, pos, model.init_energy[livestock],
+                          model.Δenergy[livestock], model.birth_rate[livestock],
+                          livestock, landholder)
 
     # Create and return new livestock Critter.
-    return add_agent!(pos, model, default_energy, default_Δenergy, 
-                      grass_frac -> 0.2 * grass_frac, livestock, landholder)
+    return add_agent!(new_critter, model)
 
 end
 
@@ -158,58 +163,77 @@ function add_livestock!(model, landholder::Landholder)
 
     # Initialize livestock and assign to landholder. 
     landholder.livestock = 
-        [livestock_factory!(model, holding) for _ in n_livestock]
+        [livestock_factory!(model, landholder) for _ in 1:n_livestock]
 end
 
 
 function make_possible_holding(model)  #, available_cells)
 
     plot_size = 1 + rand(model.plot_size_distro)
-    xmin, ymin = draw(model.available_cells)
+    xmin, ymin = rand(model.available_cells)
 
-    xmax = plot_location[1] + plot_size
-    ymax = plot_location[2] + plot_size 
+    xmax = xmin + plot_size
+    ymax = ymin + plot_size 
 
     possible_plot = [(x, y) for x in xmin:xmax for y in ymin:ymax]
 end
 
 
 # Helper function to make a valid holding.
-function make_valid_holding(available_cells)
+function make_valid_holding!(model)
 
     space_width = model.space_width
 
+    # Create possible holdings and make valid until a non-empty holding is created.
     holding_empty = true
-    holding = make_possible_holding(available_cells)
+    holding = []
     while holding_empty
+
+        holding = make_possible_holding(model)
 
         holding = filter(coord -> 
                          (coord[1] ≤ space_width) && 
                          (coord[2] ≤ space_width) &&
-                         (coord ∈ available_cells),
-                        possible_holding)
+                         (coord ∈ model.available_cells),
+                        holding)
 
         holding_empty = isempty(holding)
 
     end            
 
-    delete!(available_cells, 
-            findall(coord -> coord ∈ holding, available_cells))
+    deleteat!(model.available_cells, 
+            findall(coord -> coord ∈ holding, model.available_cells))
 end
 
 
 function initialize_simplefences(;
-        init_pops = Dict(insect => 20, bird => 10, herbivore => 10, 
-                         carnivore => 5, livestock => 50, landholder => 5),
+        init_pops = Dict(insect => 1000, bird => 100, herbivore => 50, 
+                         carnivore => 25, livestock => 100, landholder => 5),
+
+        birth_rate = 
+            Dict(insect => 0.2, bird => 0.1, herbivore => 0.05, 
+                 livestock => 0.05, carnivore => 0.02),
+
+        init_energy = 
+            Dict(insect => 0.1, bird => 0.4, herbivore => 1, 
+                 livestock => 2, carnivore => 3),
+
+        Δenergy = 
+           Dict(insect => .01, bird => 0.04, herbivore => 0.1, 
+                livestock => 0.2, carnivore => 0.3),
+
         space_width = 100,
         grass_regrowth_rate = 0.05,
         grass_consumption_rate = 0.1,  # same for livestock and herbivores 
         plot_size_distro_mean_min1 = 1,
+        insect_grass_coeff = 0.2,
+        init_livestock_per_area = 1,
         seed = 42
     )
 
+    dims = (space_width, space_width)
     rng = MersenneTwister(seed)
-    space = GridSpace(dims, periodic = true)
+    space = GridSpace(dims, periodic = false)
 
     # Model properties contain the grass as two arrays: whether it is fully grown
     # and the time to regrow. Also have static parameter `regrowth_time`.
@@ -218,44 +242,61 @@ function initialize_simplefences(;
         space_width = space_width,
         grass = ones(Float64, dims),
         grass_regrowth_rate = 0.1,
-        landowners::Array{Landowner} = [],
+        landholders = [],
         plot_size_distro = Poisson(plot_size_distro_mean_min1),
-        available_cells = [(x, y) for x in 1:space_width for y in 1:space_width]
+        available_cells = [(x, y) for x in 1:space_width for y in 1:space_width],
+        # Coefficient relating number of insects to vegetation growth (i.e., due
+        # to presence of pollinators.
+        insect_grass_coeff = insect_grass_coeff,
+        init_livestock_per_area = init_livestock_per_area,
+        init_pops = init_pops,
+        birth_rate = birth_rate,
+        init_energy = init_energy,
+        Δenergy = Δenergy
     )
 
     model = ABM(Critter, space;
         properties, rng, scheduler = Schedulers.randomly, warn = false
     )
         
-    critters = initialize_critters!(model, init_pops)
-    landholders = initialize_landholders!(model, init_pops.landholder)
+    critters = initialize_critters!(model)
+    landholders = initialize_landholders!(model, init_pops[landholder])
 
     for p in positions(model)
         model.grass[p...] = 1.0
     end
 
+    return model
+
 end
 
 
-function initialize_critters!(model, init_props)
+function initialize_critters!(model)
 
+    critter_idx = 1
     for species in instances(Species)
-        for ii in 1:init_props[species]
-            add_agent!(Critter, model, model.init_energy[species], 
-                       model.init_Δenergy[species], 
-                       model.init_birth_rate[species],
-                       species)
+        # For each species, initialize the init population size specified in init_pops.
+        if species != landholder
+            for ii in 1:model.init_pops[species]
+                pos = random_position(model)
+                new_agent = Critter(critter_idx, pos, model.init_energy[species], 
+                                    model.Δenergy[species], model.birth_rate[species],
+                                    species, nothing)
+
+                add_agent!(new_agent, model)
+                critter_idx += 1
+            end
         end
     end
 end
 
 
-function initialize_landholders!(model, n_landholders; n_livestock_coeff)
+function initialize_landholders!(model, n_landholders; n_livestock_coeff = 1)
 
     for l_id in 1:n_landholders
-        holding = make_valid_holding!(available_cells)
+        holding = make_valid_holding!(model)
         new_landholder = Landholder(id = l_id, holding = holding)
-        add_livestock!(new_landholder)
+        add_livestock!(model, new_landholder)
         push!(model.landholders, new_landholder)
     end
 
