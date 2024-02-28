@@ -3,6 +3,7 @@
 # 
 # 
 using Agents
+using DataStructures
 using Distributions
 using Memoize
 using Parameters
@@ -10,6 +11,7 @@ using Random
 
 
 @enum Species insect bird herbivore carnivore livestock landholder
+
 
 # Do not list cattle 
 prey_lookup = Dict(insect => [], bird => [insect], herbivore => [], 
@@ -19,7 +21,7 @@ prey_lookup = Dict(insect => [], bird => [insect], herbivore => [],
 @with_kw mutable struct Landholder
     
     id::Int
-    holding::Array{NTuple{2,Int}}
+    holding::Array{NTuple{2,Int}} = []
     livestock::Array{AbstractAgent} = []
     fence_probability::Float64 = 0.5
     fenced::Bool = false
@@ -38,7 +40,7 @@ end
     birth_rate::Float64
 
     species::Species
-    landowner::Union{Landholder,Nothing} = nothing
+    landholder::Union{Landholder,Nothing} = nothing
 
 end
 
@@ -48,22 +50,32 @@ end
 # of pollinators (insects).
 function model_step!(model)
 
+    # Reset total grass count.
+    model.total_grass = 0.0
+
+    # Iterate through all grass, grow more based on insects, calc new total.
     for pos in positions(model)
+
         # Grow vegetation depending on insects.
         c = model.insect_grass_coeff
-        insects_at_pos = length(filter(a -> a.species == insect,
-                                       agents_in_position(pos, model)))
+
+        insects_at_pos = count(!isnothing, Iterators.filter(a -> a.species == insect,
+                                           agents_in_position(pos, model)))
+
         curr_grass = model.grass[pos...]
 
         # Grass grows at least c, but more insects means more pollinators and greater growth.
-        model.grass[pos...] = max(curr_grass + (c * (1 + insects_at_pos)), 1)
+        model.grass[pos...] = min(curr_grass + (c * (1 + insects_at_pos)), 1)
+
+        # Add current patch position grass to total.
+        model.total_grass += model.grass[pos...]
     end
 end
 
 #: Helper function for agent_step to find and eat available prey at agent position.
 function eat_available_prey!(agent, model)
     if agent.species == carnivore 
-        prey_species = [herbivore, cattle]
+        prey_species = [herbivore, livestock]
     elseif agent.species == bird
         prey_species = [insect]
     else
@@ -71,49 +83,73 @@ function eat_available_prey!(agent, model)
     end
 
     # find available prey
-    available_prey = filter(a -> a.species ∈ prey_species,
-                            agents_in_position(agent.pos, model))
+    available_prey = Iterators.filter(a -> a.species ∈ prey_species,
+                                      agents_in_position(agent.pos, model))
 
     # take one of the available prey at random if any are available
     if !isempty(available_prey)
-        prey = rand(available_prey)
+        prey = rand(collect(available_prey))
         agent.energy += prey.energy
         remove_agent!(prey, model)
     end
 
 end
 
+
 # Handle movement, feeding. 
 function agent_step!(agent, model)
 
     ## Move to a location depending on species and state...
-    # ...livestock go to random location in landowner's holding...
+    # ...livestock go to random location in landholder's holding...
     if agent.species == livestock
-        new_pos = rand(agent.landowner.holding) 
-        move_agent!(agent, new_pos, model)
+        try
+            new_pos = rand(agent.landholder.holding) 
+            move_agent!(agent, new_pos, model)
+        catch
+            println(agent)
+            error("stop")
+        end
 
     # ...birds and insects can random-walk anywhere (1 cell by default)...
     elseif agent.species ∈ [bird, insect]
-        new_pos = rand(nearby_positions(agent.pos, model))
+
+        new_pos = rand(collect(nearby_positions(agent.pos, model)))
 
     # ...finally, herbivores and carnivores can't go to fenced locations.
     else
-        new_pos = filter(pos -> check_pos_available(pos, model), 
-                         nearby_positions(agent.pos, model))
+        available_locations = collect(Iterators.filter(pos -> check_pos_available(pos, model), 
+                                                       nearby_positions(agent.pos, model)))
+        new_pos = agent.pos
+        if !isempty(available_locations)
+            new_pos = rand(available_locations)
+        end
     end
     move_agent!(agent, new_pos, model)
 
     # Feed, depending on species, location, and location's state...
     # ...if not a carnivore or bird, eat grass at location up to 4*Δenergy...
     if agent.species ∈ [insect, herbivore, livestock]
-        grass_avail = grass[agent.pos]
+        grass_avail = model.grass[agent.pos...]
         Δenergy = agent.Δenergy
-        energy_to_eat = min(4*Δenergy, grass_avail)
-        grass_avail -= energy_to_eat
+        energy_to_eat = min(20*Δenergy, grass_avail)
+        model.grass[agent.pos...] -= energy_to_eat
 
     # ...if it is a carnivore, try to eat herbivore or livestock at location...
     else
         eat_available_prey!(agent, model)
+    end
+
+    # Maybe reproduce.
+    if rand() < agent.birth_rate
+
+        new_id = model.max_id + 1
+        model.max_id = new_id
+        species = agent.species
+        new_agent = Critter(new_id, agent.pos, model.init_energy[species],
+                            model.Δenergy[species], model.birth_rate[species],
+                            species, agent.landholder)
+
+        add_agent!(new_agent, model)
     end
 
     # Lose Δenergy required to live for one time step.
@@ -132,8 +168,6 @@ end
    return pos ∈ model.available_cells
 
 end
-
-
 
 
 function livestock_factory!(model, landholder; 
@@ -170,6 +204,7 @@ end
 function make_possible_holding(model)  #, available_cells)
 
     plot_size = 1 + rand(model.plot_size_distro)
+    print(plot_size)
     xmin, ymin = rand(model.available_cells)
 
     xmax = xmin + plot_size
@@ -185,11 +220,11 @@ function make_valid_holding!(model)
     space_width = model.space_width
 
     # Create possible holdings and make valid until a non-empty holding is created.
-    holding_empty = true
     holding = []
-    while holding_empty
+    while isempty(holding)
 
         holding = make_possible_holding(model)
+        # println(holding)
 
         holding = filter(coord -> 
                          (coord[1] ≤ space_width) && 
@@ -197,62 +232,68 @@ function make_valid_holding!(model)
                          (coord ∈ model.available_cells),
                         holding)
 
-        holding_empty = isempty(holding)
+        deleteat!(model.available_cells, 
+                  findall(coord -> coord ∈ holding, model.available_cells))
 
+        # println(holding)
     end            
 
-    deleteat!(model.available_cells, 
-            findall(coord -> coord ∈ holding, model.available_cells))
+    return holding
 end
 
 
 function initialize_simplefences(;
-        init_pops = Dict(insect => 1000, bird => 100, herbivore => 50, 
+        init_pops = Dict(insect => 1000, bird => 300, herbivore => 50, 
                          carnivore => 25, livestock => 100, landholder => 5),
 
         birth_rate = 
-            Dict(insect => 0.2, bird => 0.1, herbivore => 0.05, 
-                 livestock => 0.05, carnivore => 0.02),
+            Dict(insect => 0.05, bird => 0.005, herbivore => 0.01, 
+                 livestock => 0.008, carnivore => 0.008),
 
         init_energy = 
-            Dict(insect => 0.1, bird => 0.4, herbivore => 1, 
-                 livestock => 2, carnivore => 3),
+            Dict(insect => 0.8, bird => 1.0, herbivore => 5, 
+                 livestock => 5, carnivore => 5),
 
         Δenergy = 
-           Dict(insect => .01, bird => 0.04, herbivore => 0.1, 
-                livestock => 0.2, carnivore => 0.3),
+           Dict(insect => .002, bird => 0.01, herbivore => 0.01, 
+                livestock => 0.02, carnivore => 0.2),
 
         space_width = 100,
-        grass_regrowth_rate = 0.05,
-        grass_consumption_rate = 0.1,  # same for livestock and herbivores 
-        plot_size_distro_mean_min1 = 1,
-        insect_grass_coeff = 0.2,
+        grass_regrowth_rate = 0.1,
+        grass_consumption_rate = 0.2,  # same for livestock and herbivores 
+        plot_size_distro_mean_min1 = 5,
+        insect_grass_coeff = 0.02,
         init_livestock_per_area = 1,
-        seed = 42
+        seed = 42,
+        initial_fenced_prob = 0.5
     )
 
     dims = (space_width, space_width)
     rng = MersenneTwister(seed)
-    space = GridSpace(dims, periodic = false)
+    space = GridSpace(dims, periodic = false, metric = :manhattan)
 
     # Model properties contain the grass as two arrays: whether it is fully grown
     # and the time to regrow. Also have static parameter `regrowth_time`.
     # Notice how the properties are a `NamedTuple` to ensure type stability.
-    properties = (
-        space_width = space_width,
-        grass = ones(Float64, dims),
-        grass_regrowth_rate = 0.1,
-        landholders = [],
-        plot_size_distro = Poisson(plot_size_distro_mean_min1),
-        available_cells = [(x, y) for x in 1:space_width for y in 1:space_width],
+    properties = Dict(
+        :space_width => space_width,
+        :grass => ones(Float64, dims),
+        :grass_regrowth_rate => 0.1,
+        :landholders => [],
+        :plot_size_distro => Poisson(plot_size_distro_mean_min1),
+        :available_cells => [(x, y) for x in 1:space_width for y in 1:space_width],
         # Coefficient relating number of insects to vegetation growth (i.e., due
         # to presence of pollinators.
-        insect_grass_coeff = insect_grass_coeff,
-        init_livestock_per_area = init_livestock_per_area,
-        init_pops = init_pops,
-        birth_rate = birth_rate,
-        init_energy = init_energy,
-        Δenergy = Δenergy
+        :insect_grass_coeff => insect_grass_coeff,
+        :init_livestock_per_area => init_livestock_per_area,
+        :init_pops => init_pops,
+        :birth_rate => birth_rate,
+        :init_energy => init_energy,
+        :Δenergy => Δenergy,
+        :total_fenced_area => 0.0,
+        :initial_fenced_prob => initial_fenced_prob,
+        :total_grass => 0.0,
+        :max_id => 0
     )
 
     model = ABM(Critter, space;
@@ -261,12 +302,23 @@ function initialize_simplefences(;
         
     critters = initialize_critters!(model)
     landholders = initialize_landholders!(model, init_pops[landholder])
+    update_total_fenced_area!(model)
 
     for p in positions(model)
         model.grass[p...] = 1.0
     end
 
+    model.max_id = maximum(map(a -> a.id, allagents(model)))
+
     return model
+end
+
+
+function update_total_fenced_area!(model)
+
+    # Holding area equals length of coords; include in total if holding is fenced.
+    holding_sizes = [length(l.holding) for l in model.landholders if l.fenced]
+    model.total_fenced_area = isempty(holding_sizes) ? 0.0 : sum(holding_sizes)
 
 end
 
@@ -276,7 +328,7 @@ function initialize_critters!(model)
     critter_idx = 1
     for species in instances(Species)
         # For each species, initialize the init population size specified in init_pops.
-        if species != landholder
+        if species ∉ [landholder, livestock]
             for ii in 1:model.init_pops[species]
                 pos = random_position(model)
                 new_agent = Critter(critter_idx, pos, model.init_energy[species], 
@@ -295,9 +347,28 @@ function initialize_landholders!(model, n_landholders; n_livestock_coeff = 1)
 
     for l_id in 1:n_landholders
         holding = make_valid_holding!(model)
-        new_landholder = Landholder(id = l_id, holding = holding)
+        fenced = false
+
+        if rand() < model.initial_fenced_prob
+            fenced = true
+        end
+
+        new_landholder = Landholder(id = l_id, holding = holding, fenced = fenced)
+        # println(new_landholder.holding)
         add_livestock!(model, new_landholder)
+        println(new_landholder.holding)
         push!(model.landholders, new_landholder)
     end
 
 end
+
+
+frac_a(v) = sum(v .== a) / length(v)
+
+is_minority(x) = x.group == 1
+frac_a_ifdata(v) = isempty(v) ? 0.0 : frac_a(collect(v))
+
+adata = [(:species, v -> sum(v .== s)) for s in instances(Species)]
+# adata = [(:species, v -> length(collect(v)), s -> isequal(s,insect))]
+
+mdata = [:total_grass, :total_fenced_area, :grass]
