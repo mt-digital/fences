@@ -17,7 +17,6 @@ plot_prevalences <- function(dynamics_csv = "test_dynamics.csv", write_path = "f
 
 }
 
-### XXX ADD GRASS HEATMAP PLOTS XXX ###
 
 grass_tile <- function(grass_df_or_csv = "test_grass.csv", write_path = "figures/grass_test.pdf") {
   
