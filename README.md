@@ -63,4 +63,9 @@ Continue reading for how to analyze the time series data contained in this dataf
 
 ## Analysis
 
-We use R and the `tidy` ecosystem for analyzing model output. See [scripts/plot.R](scripts/plot.R) for more details.
+We use R and the [`tidyverse`](https://www.tidyverse.org/) ecosystem for analyzing model output. 
+Note a full-length book by Hadley Wickham, Mine Çetinkaya-Rundel, and Garrett
+Grolemund on this analytical approach is available online, 
+[https://r4ds.hadley.nz/](R for Data Science).
+
+

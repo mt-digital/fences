@@ -6,11 +6,14 @@ mytheme <- theme(axis.line = element_line(), legend.key=element_rect(fill = NA),
                  legend.key.size = unit(1.5, 'lines'),
                  panel.background = element_rect(fill = "white"))
 
-plot_prevalences <- function(dynamics_csv = "test_dynamics.csv", write_path = "figures/species_dynamics.pdf") {
+plot_prevalences <- function(dynamics_csv = "test_dynamics.csv", 
+                             write_path = "figures/species_dynamics.pdf") {
   
   read_csv(dynamics_csv) %>%
     pivot_longer(!step, names_to = "variable", values_to = "value") %>%
-    filter((variable != "total_grass") & (variable != "total_fenced_area") & (variable != "landholder")) %>%
+    filter((variable != "total_grass") & 
+           (variable != "total_fenced_area") & 
+           (variable != "landholder")) %>%
     ggplot(aes(x=step, y=value, color=variable)) + geom_line() + mytheme
   
   ggsave(write_path, width = 7, height = 4.5)
