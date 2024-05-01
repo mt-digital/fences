@@ -66,6 +66,7 @@ Continue reading for how to analyze the time series data contained in this dataf
 We use R and the [`tidyverse`](https://www.tidyverse.org/) ecosystem for analyzing model output. 
 Note a full-length book by Hadley Wickham, Mine Çetinkaya-Rundel, and Garrett
 Grolemund on this analytical approach is available online, 
-[https://r4ds.hadley.nz/](R for Data Science).
+[https://r4ds.hadley.nz](R for Data Science).
+
 
 
