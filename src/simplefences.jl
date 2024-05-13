@@ -83,6 +83,10 @@ function eat_available_prey!(agent, model)
     end
 
     # find available prey
+    # TODO make it prey within a certain larger radius, e.g. within a radius
+    # of five cells, or whatever number of cells, using Agents.nearby_agents()
+    # see https://juliadynamics.github.io/Agents.jl/stable/api/#Nearby-Agents
+    # (in window on other screen).
     available_prey = Iterators.filter(a -> a.species ∈ prey_species,
                                       agents_in_position(agent.pos, model))
 
@@ -247,7 +251,7 @@ function initialize_simplefences(;
                          carnivore => 25, livestock => 100, landholder => 5),
 
         birth_rate = 
-            Dict(insect => 0.05, bird => 0.005, herbivore => 0.01, 
+            Dict(insect => 0.02, bird => 0.005, herbivore => 0.01, 
                  livestock => 0.008, carnivore => 0.008),
 
         init_energy = 
