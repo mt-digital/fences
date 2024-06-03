@@ -208,8 +208,12 @@ end
 function make_possible_holding(model)  #, available_cells)
 
     plot_size = 1 + rand(model.plot_size_distro)
-    print(plot_size)
     xmin, ymin = rand(model.available_cells)
+
+    space_width = model.space_width
+    while (xmin < (0.1 * space_width)) || (ymin < (0.1 * space_width))
+        xmin, ymin = rand(model.available_cells)
+    end
 
     xmax = xmin + plot_size
     ymax = ymin + plot_size 
@@ -228,18 +232,16 @@ function make_valid_holding!(model)
     while isempty(holding)
 
         holding = make_possible_holding(model)
-        # println(holding)
 
         holding = filter(coord -> 
-                         (coord[1] ≤ space_width) && 
-                         (coord[2] ≤ space_width) &&
+                         (coord[1] ≤ space_width - (space_width * .1)) && 
+                         (coord[2] ≤ space_width - (space_width * .1)) &&
                          (coord ∈ model.available_cells),
                         holding)
 
         deleteat!(model.available_cells, 
                   findall(coord -> coord ∈ holding, model.available_cells))
 
-        # println(holding)
     end            
 
     return holding
@@ -358,9 +360,7 @@ function initialize_landholders!(model, n_landholders; n_livestock_coeff = 1)
         end
 
         new_landholder = Landholder(id = l_id, holding = holding, fenced = fenced)
-        # println(new_landholder.holding)
         add_livestock!(model, new_landholder)
-        println(new_landholder.holding)
         push!(model.landholders, new_landholder)
     end
 

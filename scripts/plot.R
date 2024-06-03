@@ -1,6 +1,7 @@
 library(ggplot2)
 library(tidyverse)
 
+
 mytheme <- theme(axis.line = element_line(), legend.key=element_rect(fill = NA),
                  text = element_text(size=22),# family = 'PT Sans'),
                  legend.key.width = unit(2, 'cm'),
@@ -8,12 +9,13 @@ mytheme <- theme(axis.line = element_line(), legend.key=element_rect(fill = NA),
                  panel.background = element_rect(fill = "white"))
 
 
-plot_prevalences <- function(dynamics_csv = "test_dynamics.csv", 
-                             write_path = "figures/species_dynamics.pdf") {
+plot_prevalences <- function(dynamics_csv = "prevalence.csv", 
+                             write_path = "figures/prevalence_dynamics.pdf") {
   
   read_csv(dynamics_csv) %>%
     pivot_longer(!step, names_to = "variable", values_to = "value") %>%
     
+    # Remove unwanted columns that are not species prevalence.
     filter((variable != "total_grass") & 
            (variable != "total_fenced_area") &
            (variable != "landholder")) %>%
@@ -25,8 +27,8 @@ plot_prevalences <- function(dynamics_csv = "test_dynamics.csv",
 }
 
 
-grass_tile <- function(grass_df_or_csv = "test_grass.csv", 
-                       write_path = "figures/grass_test.pdf") {
+plot_map <- function(grass_df_or_csv = "landscape.csv", 
+                     write_path = "figures/map.pdf") {
   
   if (is_character(grass_df_or_csv)) {
     grass_df <- read_csv(grass_df_or_csv)
