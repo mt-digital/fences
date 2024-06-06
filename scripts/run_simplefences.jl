@@ -84,46 +84,45 @@ function run_make_frame(steps_per_frame, movie_tmp_dir = "movie/tmp", basename =
             kwargs...
         )
 
-    # Make JSON of other data: animal and fence locations.
-    json_fname = joinpath(movie_tmp_dir, "json", basename * string(tstep) * ".json")
-    open(json_fname, "w") do f
-        JSON.print(f, make_overlay_dict(model_to_restart))
-    end
+    # Make CSVs of other data: animal and fence locations.
+    fences_csv_name = joinpath(movie_tmp_dir, "csv", "fences-$basename$tstep.csv")
+    animals_csv_name = joinpath(movie_tmp_dir, "csv", "animals-$basename$tstep.csv")
+
+    fences_df, animals_df = make_overlay_data(model_to_restart)
+
+    CSV.write(fences_csv_name, fences_df)
+    CSV.write(animals_csv_name, animals_df)
     
     # Create the frame after R code sourced and frame path set.
     reval("source('scripts/plot.R');")
     frame_fname = joinpath(movie_tmp_dir, "png", basename * string(tstep) * ".png")
 
     # Create the map using R.
-    reval("plot_map('$csvname', '$frame_fname');")
+    reval("plot_map('$csvname', '$fences_csv_name', 
+                    '$animals_csv_name', '$frame_fname');")
 
     return model_to_restart
+
 end
 
 
-function make_overlay_dict(model)
+function make_overlay_data(model)
 
-    lhs = copy(model.landholders)
+    fences_df = vcat([DataFrame(:landholder_id => landholder.id,
+                                :x => [coord[1] for coord in landholder.holding],
+                                :y => [coord[2] for coord in landholder.holding])
+                      for landholder in model.landholders]...)
 
-    landholders_d =  Dict(landholder.id => landholder.holding 
-                          for landholder 
-                          in filter(lh -> lh.fenced, lhs))
+    critters_to_plot = filter(a -> a.species in [herbivore, carnivore, livestock], 
+                              collect(allagents(model)))
 
-    function include_critter(agent)
-        return (agent.species in [herbivore, carnivore, livestock])
-    end
+    animals_df = vcat([DataFrame(:a_id => critter.id, 
+                                    :x => critter.pos[1], 
+                                    :y => critter.pos[2], 
+                                    :species => critter.species)
+                             for critter in critters_to_plot]...)
 
-    critters_to_plot = filter(a -> include_critter(a), collect(allagents(model)))
-
-    animals_d = 
-        Dict(Symbol(c.id) => 
-             Dict(
-                  :species => c.species, 
-                  :location => c.pos)
-             for c in critters_to_plot
-            )
-
-    return Dict(:landholders => landholders_d, :animals => animals_d)
+    return fences_df, animals_df
 
 end
 
