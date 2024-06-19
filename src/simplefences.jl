@@ -23,7 +23,7 @@ prey_lookup = Dict(insect => [], bird => [insect], herbivore => [],
     id::Int
     holding::Array{NTuple{2,Int}} = []
     livestock::Array{AbstractAgent} = []
-    fence_probability::Float64 = 0.5
+    fence_probability::Float64 = 0.05
     fenced::Bool = false
 end
 
@@ -69,6 +69,13 @@ function model_step!(model)
 
         # Add current patch position grass to total.
         model.total_grass += model.grass[pos...]
+    end
+
+    # Possibly build new fences with certain probability.
+    for landholder in filter(l -> !l.fenced, model.landholders)
+        if rand() < landholder.fence_probability
+            landholder.fenced = true
+        end
     end
 end
 
@@ -250,7 +257,7 @@ end
 
 function initialize_simplefences(;
         init_pops = Dict(insect => 1000, bird => 300, herbivore => 50, 
-                         carnivore => 25, livestock => 100, landholder => 5),
+                         carnivore => 25, livestock => 100, landholder => 20),
 
         birth_rate = 
             Dict(insect => 0.02, bird => 0.005, herbivore => 0.01, 
@@ -264,10 +271,10 @@ function initialize_simplefences(;
            Dict(insect => .002, bird => 0.01, herbivore => 0.01, 
                 livestock => 0.02, carnivore => 0.2),
 
-        space_width = 100,
+        space_width = 500,
         grass_regrowth_rate = 0.1,
         grass_consumption_rate = 0.2,  # same for livestock and herbivores 
-        plot_size_distro_mean_min1 = 5,
+        plot_size_distro_mean_min1 = 15,
         insect_grass_coeff = 0.02,
         init_livestock_per_area = 1,
         seed = 42,
@@ -307,6 +314,7 @@ function initialize_simplefences(;
     )
         
     critters = initialize_critters!(model)
+    println(length(filter(a -> a.species == herbivore, collect(allagents(model)))))
     landholders = initialize_landholders!(model, init_pops[landholder])
     update_total_fenced_area!(model)
 
@@ -332,6 +340,7 @@ end
 function initialize_critters!(model)
 
     critter_idx = 1
+    println("Going to create $(model.init_pops[herbivore]) herbivores!")
     for species in instances(Species)
         # For each species, initialize the init population size specified in init_pops.
         if species ∉ [landholder, livestock]
@@ -363,7 +372,7 @@ function initialize_landholders!(model, n_landholders; n_livestock_coeff = 1)
         add_livestock!(model, new_landholder)
         push!(model.landholders, new_landholder)
     end
-
+    
 end
 
 
