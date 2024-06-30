@@ -28,7 +28,7 @@ plot_prevalences <- function(dynamics_csv = "prevalence.csv",
 
 
 plot_map <- function(grass_df_or_csv, fence_csv, animal_csv,
-                     write_path = "figures/map.pdf") {
+                     write_path = "figures/map.pdf", tstep) {
   
   if (is_character(grass_df_or_csv)) {
     grass_df <- read_csv(grass_df_or_csv)
@@ -54,11 +54,15 @@ plot_map <- function(grass_df_or_csv, fence_csv, animal_csv,
       geom_polygon(aes(x = x, y = y, group = landholder_id, color = "brown"), 
                    fence_df, 
                    fill = NA, size=2, show.legend = FALSE) +
+      guide_colorbar(title = "Vegetation density") +
+      ggtitle(paste("t =", as.character(tstep - 1))) +
       mytheme
   } else {
     ggplot(grass_df, aes(x = x, y = y, fill = grass_layer)) + 
       geom_tile() + 
       scale_fill_gradient2(low = "#000000", mid = "#333300", high = "#63AF03") +
+      ggtitle(paste("t =", as.character(tstep - 1))) +
+      guide_colorbar(title = "Vegetation density") +
       mytheme
   }
     
