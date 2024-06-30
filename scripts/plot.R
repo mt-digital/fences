@@ -54,7 +54,7 @@ plot_map <- function(grass_df_or_csv, fence_csv, animal_csv,
       geom_polygon(aes(x = x, y = y, group = landholder_id, color = "brown"), 
                    fence_df, 
                    fill = NA, size=2, show.legend = FALSE) +
-      guide_colorbar(title = "Vegetation density") +
+      guides(color=guide_colorbar(title='Vegetation density')) +
       ggtitle(paste("t =", as.character(tstep - 1))) +
       mytheme
   } else {
@@ -62,7 +62,7 @@ plot_map <- function(grass_df_or_csv, fence_csv, animal_csv,
       geom_tile() + 
       scale_fill_gradient2(low = "#000000", mid = "#333300", high = "#63AF03") +
       ggtitle(paste("t =", as.character(tstep - 1))) +
-      guide_colorbar(title = "Vegetation density") +
+      guides(color=guide_colorbar(title='Vegetation density')) +
       mytheme
   }
     
