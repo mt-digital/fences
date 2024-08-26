@@ -1,0 +1,237 @@
+\documentclass[12pt,reqno]{amsart}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amscd}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{graphicx, wrapfig}
+\usepackage[usenames]{color}
+\usepackage[top=1.25in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+% \usepackage{natbib}
+%\usepackage{showkeys}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{longtable}
+\usepackage{dsfont}
+\usepackage{wrapfig}
+
+\usepackage[sorting=none, style=numeric-comp]{biblatex}
+
+% \addbibresource{/Users/mt/workspace/Writing/library.bib}
+\addbibresource{this.bib}
+
+
+\setcounter{MaxMatrixCols}{10}
+
+ \definecolor{red}{rgb}{1.0,0.0,0.0}
+ \def\red#1{{\textcolor{red}{#1}}}
+ \definecolor{blu}{rgb}{0.0,0.0,1.0}
+ \def\blu#1{{\textcolor{blu}{#1}}}
+ \definecolor{gre}{rgb}{0.03,0.50,0.03}
+ \def\gre#1{{\textcolor{gre}{#1}}}
+ \definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
+\def\dvio#1{{\textcolor{darkviolet}{#1}}}
+
+% \def\Re{\operatorname{Re}}
+\sloppy
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\ud}{{\, \mathrm{d}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+
+
+\newtheoremstyle{mytheorem}% name
+{6pt}%Space above
+{6pt}%Space below
+{\itshape}%Body font
+{-0pt}%Indent amount 1
+{\large \scshape}% Theorem head font
+{}%Punctuation after theorem head
+{1em}%Space after theorem head 2
+{}%Theorem head spec (can be left empty, meaning "normal")
+
+\newtheoremstyle{myremark}% name
+{6pt}%Space above
+{10pt}%Space below
+{\rm}%Body font
+{-0pt}%Indent amount 1
+{\large \scshape}% Theorem head font
+{}%Punctuation after theorem head
+{1em}%Space after theorem head 2
+{}%Theorem head spec (can be left empty, meaning "normal")
+
+
+
+
+\theoremstyle{mytheorem}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Definition}[Theorem]{Definition}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Hypothesis}[Theorem]{Hypothesis}
+\newtheorem{Corollaryoftheproof}[Theorem]{Corollary (of the proof)}
+
+
+\theoremstyle{myremark}
+\newtheorem{Remark}{Remark}
+\newtheorem{Example}{Example}
+\newtheorem{Notation}{Notation}
+
+
+
+
+
+% \bibpunct{(}{)}{; }{a}{,}{,}
+% \setcitestyle{authoryear}    % Imposta lo stile di citazione come autore-anno
+\parskip=5pt
+
+% \linespread{1.5}\selectfont
+
+% \usepackage{float}
+% \usepackage{caption}
+% \captionsetup[subfigure]{position=bottom}
+% \usepackage{subfig}
+% \usepackage{subfloat}
+
+
+\begin{document}
+
+
+\section{Introduction: modeling land use, biodiversity, fencing, and policy (in the
+Greater Mara, Kenya)}
+
+Biodiversity has both intrinsic and economic value, but is increasingly threatened
+due to expanding human populations, overexploitation of land and game animals,
+climate change and pollution, and invasive species encroachment~\cite{Bellard2022}.
+Government policy, social influence, and personal preference all affect land use
+decisions on different time, population, and geospatial scales 
+(plant crops, raise cattle, etc.)~\cite{Eitzel2020,Løvschal2021}.
+Fence construction is one important anthropocene feature that threatens
+biodiversity~\cite{Packer2013} and whole 
+ecosystems~\cite{Løvschal2017,Løvschal2022}. 
+In turn, changes in biodiversity affect land use, resulting in a complex, coupled
+dynamical system. In the Mara, 
+ungulates are particularly threatened~\cite{Ogutu2009}, with fencing being primary
+contributor to wildlife declines generally~\cite{Ogutu2016}. 
+There are many reasons why people subdivide land and build
+fences~\cite{Mwangi2007}, though these may change depending on local context.
+Similarly, the risks posed by different fences are ostensibly
+different in different contexts~\cite{Bellard2022}, perhaps even within
+a single ecosystem like the Mara. 
+
+Because of the need to understand land use and
+fence construction on different time, population, and geospatial scales, we
+outline here a self-consistent, two-pronged modeling strategy. One 
+model is intended to understand, or predict alternative, outcomes over 
+longer time scales, and larger population and geospatial scales,
+based on a mean-field policy optimizaiton. This approach would be used to 
+understand how government policies that lasted decades affected the distribution of
+land use, the size of wildlife populations, and the total area fenced, for example.
+Of course, these larger-scale dynamics occuring over decades emerges from
+individual-level decisions and local interpersonal interactions, such as 
+when a farmer in the Mara must decide whether to build a fence or not based on
+the amount of wildlife concentration on their land, which is a function of whether or
+not neighbors built fences, joined conservancies, etc.~\cite{}. Local taxes,
+regulations, and other laws could have different effects in different places.
+To account for such local details and predict short-term outcomes in geographic areas
+among fewer people, we also develop a proof-of-concept agent-based model where
+individual-level incentives and interpersonal influence shape fence building
+behaviors, which in turn affect biodiversity, which in turn affects trophic network
+dynamics. 
+
+
+
+
+\section{The optimization problem in sequence and in recursive form}
+
+    The social planner's problem in sequence form takes the form:
+    \bigskip
+    
+    $v_0(H_0,C_0,N_0,L_0,C_{0,0},C_{r,0},F_0,E_0)=$
+    
+    $max_{{\{H_{t+1},C_{t+1},N_{t+1},L_{t+1},C_{0,t+1},C_{r,t+1},F_{t+1},E_{t+1}\}}_{t=0}^{\infty}} 
+    \sum_{t=0}^{\infty}\beta^{t}G(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+     \bigskip
+     
+    subject to (these constraints are written in abstract form, but they will be the difference equations Andy wrote after correcting for typos):
+     \bigskip
+     
+    $H_{t+1}=f_{H}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $C_{t+1}=f_{C}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $N_{t+1}=f_{N}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $L_{t+1}=f_{L}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $C_{0,t+1}=f_{C₀}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $C_{r,t+1}=f_{C_{r}}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $F_{t+1}=f_{F}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+    
+    $E_{t+1}=f_{E}(H_{t},C_{t},N_{t},L_{t},C_{0,t},C_{r,t},E_{t},F_{t})$
+     \bigskip
+     
+    The social' planner's problem has the equivalence representation in recursive form given below. Once we decide on parametric forms (e.g., for the function G) and values for the parameters, this functional (Bellman) equation can then be solved using value function iteration. 
+     \bigskip
+     
+   The Bellman equation associated with the above problem is:
+     \bigskip
+     
+    $v(H,C,N,L,C₀,C_{r},F,E)=$
+    $max_{\{H',C′,N′,L′,C_{0}′,C_{r}′,F′,E′\}}
+    G(H,C,N,L,C₀,C_{r},E,F)+\beta v(H',C',N',L',C'_{0},C'_{r},E',F')$
+    subject to:
+     \bigskip
+     
+    
+    $H′=f_{H}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $C′=f_{C}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $N′=f_{N}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $L′=f_{L}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $C₀′=f_{C₀}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $C_{r}′=f_{C_{r}}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $F′=f_{F}(H,C,N,L,C₀,C_{r},E,F)$
+    
+    $E′=f_{E}(H,C,N,L,C₀,C_{r},E,F)$
+ \bigskip
+ 
+For the function $G()$, perhaps we can use: $U(x_{1},...,x_{n})=\sum_{i}\alpha_{i}ln(x_{i})$, $\alpha_{i}>0$
+
+
+
+\section{Andy's equations (to be checked)}
+
+         $H_{t+1}=bH_{t}(((w-H_{p})/w))+((L(1-p)H-c)/L)+sH_{t}-((p_{t}H_{t})/(H_{t}+c_{t}))$
+    
+    Assume $p=(w/(L+w))$
+    
+    $C_{t+1}=bC_{t}(((Lf-p_{f}c_{t})/(Lf))+((L(10f)-(1-p_{f})c_{t}-(1-p)H_{t})/(L(1-f))))+(s-m)c_{t}-((αp_{t}c_{t}(1-f)L)/((c_{t}+(1-p_{f})+H_{t}(1-p)))$
+    
+    $N_{t+1}=bN_{t}(fc_{t})+sN_{t}$
+    
+    $L_{t+1}=L_{t}(1-c₁f(c_{t},H_{t}))-L_{t}c(H_{t},cropdollars)$
+    
+    $c_{0,t+1}=c₃(H,Tdollars)$
+    
+    $C_{c,t+1}=c₂(((c_{ct})/(0.2w+c_{t})))f(C,H,P)$
+
+    $F_{t+1}=F_{t}+f(C,H,P)$
+    
+$E_{t+1}=E_{t}b(((W-eE_{t})/W))+(s-p)E_{t}$
+
+\printbibliography
+
+\end{document}
