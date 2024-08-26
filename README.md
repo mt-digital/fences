@@ -69,4 +69,16 @@ Grolemund on this analytical approach is available online,
 [https://r4ds.hadley.nz](R for Data Science).
 
 
+### .mp4 to .gif
 
+Use the following script to convert an mp4 to a .gif:
+
+
+```bash
+src="movie/default.mp4"
+dest="output.gif"
+palette="movie/tmp/palette.png"
+
+ffmpeg -i $src -vf palettegen -y $palette
+ffmpeg -i $src -i $palette -lavfi paletteuse -y $dest
+```

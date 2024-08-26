@@ -110,7 +110,7 @@ function run_make_frame(steps_per_frame, movie_tmp_dir = "movie/tmp", basename =
 
     # Create the map using R.
     reval("plot_map('$csvname', '$fences_csv_name', 
-                    '$animals_csv_name', '$frame_fname');")
+          '$animals_csv_name', '$frame_fname', $(tstep + 1));")
 
     return prevalence_df, model_to_restart
 
