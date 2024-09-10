@@ -1,0 +1,219 @@
+% \documentclass[12pt,reqno]{amsart}
+\documentclass{article}
+% \usepackage[letterpaper, margin=1.1in]{geometry}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amscd}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage[bookmarks, colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{graphicx, wrapfig}
+\usepackage[usenames]{color}
+\usepackage[top=1.25in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+% \usepackage{natbib}
+%\usepackage{showkeys}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{longtable}
+\usepackage{dsfont}
+\usepackage{wrapfig}
+\usepackage{authblk}
+
+\usepackage[sorting=none, style=numeric-comp]{biblatex}
+
+\addbibresource{/Users/mt/workspace/Writing/library.bib}
+\addbibresource{this.bib}
+
+
+\setcounter{MaxMatrixCols}{10}
+
+ \definecolor{red}{rgb}{1.0,0.0,0.0}
+ \def\red#1{{\textcolor{red}{#1}}}
+ \definecolor{blu}{rgb}{0.0,0.0,1.0}
+ \def\blu#1{{\textcolor{blu}{#1}}}
+ \definecolor{gre}{rgb}{0.03,0.50,0.03}
+ \def\gre#1{{\textcolor{gre}{#1}}}
+ \definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
+\def\dvio#1{{\textcolor{darkviolet}{#1}}}
+
+% \def\Re{\operatorname{Re}}
+\sloppy
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\ud}{{\, \mathrm{d}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+
+
+\newtheoremstyle{mytheorem}% name
+{6pt}%Space above
+{6pt}%Space below
+{\itshape}%Body font
+{-0pt}%Indent amount 1
+{\large \scshape}% Theorem head font
+{}%Punctuation after theorem head
+{1em}%Space after theorem head 2
+{}%Theorem head spec (can be left empty, meaning "normal")
+
+\newtheoremstyle{myremark}% name
+{6pt}%Space above
+{10pt}%Space below
+{\rm}%Body font
+{-0pt}%Indent amount 1
+{\large \scshape}% Theorem head font
+{}%Punctuation after theorem head
+{1em}%Space after theorem head 2
+{}%Theorem head spec (can be left empty, meaning "normal")
+
+
+
+
+\theoremstyle{mytheorem}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Definition}[Theorem]{Definition}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Hypothesis}[Theorem]{Hypothesis}
+\newtheorem{Corollaryoftheproof}[Theorem]{Corollary (of the proof)}
+
+
+\theoremstyle{myremark}
+\newtheorem{Remark}{Remark}
+\newtheorem{Example}{Example}
+\newtheorem{Notation}{Notation}
+
+
+
+
+
+% \bibpunct{(}{)}{; }{a}{,}{,}
+% \setcitestyle{authoryear}    % Imposta lo stile di citazione come autore-anno
+\parskip=5pt
+
+% \linespread{1.5}\selectfont
+
+% \usepackage{float}
+% \usepackage{caption}
+% \captionsetup[subfigure]{position=bottom}
+% \usepackage{subfig}
+% \usepackage{subfloat}
+
+\definecolor{mt-orange}{RGB}{240, 96, 0}
+\newcommand{\mt}[1]{{\textcolor{mt-orange} {({\tiny MT:} #1)}}}
+\definecolor{your-color-name}{RGB}{60,50,168}
+\newcommand{\YourInitialsHere}[1]{{\textcolor{your_color_name} {({\tiny YI:} #1)}}}
+
+\begin{document}
+
+\title{Group-level homophily in metapopulation social networks can optimize the diffusion of innovations}
+
+\author{Matthew A. Turner$^{*,1}$, SFI Biodiversity Team$^{2}$ \\ 
+  {\small $^1$Stanford Doerr School of Sustainability,
+Environmental Social Sciences, Stanford University, USA \\ \vspace{0.5em}
+$^2$Earth} \\ \vspace{0.5em}
+{\small $^*$Correspondence: \href{mailto:maturner@stanford.edu}{maturner@stanford.edu}}}
+\maketitle
+
+\begin{abstract}
+  \noindent
+  In the Greater Mara, Kenya, across the past few decades, conservationists and
+  policymakers have struggled to develop policies and practices that are robust to
+  predictable and unpredictable impediments, and effectively optimize precious
+  political, legal, and enforcement resources for biodiversity conservation. Indeed,
+  biodiversity conservation worldwide struggles to meet critical targets, including
+  the United Nations' Sustainable Development Goals 14 and 15, to protect, restore,
+  and promote sustainable use of marine (Goal 14) and terrestrial ecosystems (Goal
+  15).  We suggest that this is because any decades-long policy-based course of
+  action in socio-ecological systems for is subject to uncertainty, stochasticity,
+  and path-dependence of outcomes characteristic of the socio-ecological systems in
+  which the policies. There are predictable impediments to biodiversity: these
+  include personal-level cognitive biases or incentives of voters and policymakers
+  such as the temptation of lucrative poaching or illegal grazing.  Another
+  predictable impediment is if social networks are not sufficiently structured,
+  biodiversity-protecting behaviors may fail to percolate through relevant
+  populations via interpersonal observation and social. These impediments are indeed
+  \emph{predictable} in some sense, but only in contexts that meet some set of
+  theoretical assumptions and conditions, with observations necessarily limited to a
+  finite number of experimental laboratory or real-world settings. We clearly cannot
+  perform real-world experiments on the Mara, or any other biodiversity preserve,
+  because we do not get more than one, and it must be saved now. Here we develop a
+  strategy for anticipating a range of possible outcomes for biodiversity
+  interventions by simulating the complex local-, individual-, and relatively
+  shorter time-scale dynamics of stakeholder decision-making and trophic networks
+  that are affected by regional, state, or national policy. For instance, we
+  demonstrate that a push to incorporate more rangeland into conservancies can tip
+  unincorporated pastoralists to build fences around their landholdings, which may
+  eventually limit wild herbivore mobility by encircling herbivores in the reserve,
+  which can become deadly. In one tragic example, in the case of a sudden severe
+  drought, many landholders had been fencing their land over the course of many
+  years, which had not been a problem since water had been plentiful. When the
+  drought hit, wildebeest needed to migrate for water, but were unable to due to
+  fence construction that only became an obvious problem after that tragic event.
+  We explain how agent-based modeling can represent local dynamics, while these
+  dynamics are constrained by national- and regional-level policy. These policies 
+  are aimed at optimizing biodiversity outcomes over longer time scales, 
+  which could be calculated, for example obtained through dynamic
+  optimization that accounts for actor and stakeholder incentives. More local-,
+  shorter time-scale predictions can be used to update optimal policies, which
+  in turn generate new smaller-scale simulation outcomes, and so on so that
+  the models at each scale contribute to a strategy for implementing long-term
+  \emph{and} adaptive policy to protect biodiversity.
+  \mt{Just an idea, haven't done this; I would very much welcome
+  ideas on a Kenyan-focused or -inspired idea for a proof of concept like this.}
+\end{abstract}
+
+
+\section{Introduction: predicting effects of environmental policy on 
+  biodiversity (in the Greater Mara, Kenya)}
+
+Biodiversity has both intrinsic and economic value, but is increasingly threatened
+due to expanding human populations, overexploitation of land and game animals,
+climate change and pollution, and invasive species encroachment~\cite{Bellard2022}.
+Government policy, social influence, and personal preference all affect land use
+decisions on different time, population, and geospatial scales 
+(plant crops, raise cattle, etc.)~\cite{Eitzel2020,Løvschal2021}.
+Fence construction is one important anthropocene feature that threatens
+biodiversity~\cite{Packer2013} and whole 
+ecosystems~\cite{Løvschal2017,Løvschal2022}. 
+In turn, changes in biodiversity affect land use, resulting in a complex, coupled
+dynamical system. In the Mara, 
+ungulates are particularly threatened~\cite{Ogutu2009}, with fencing being primary
+contributor to wildlife declines generally~\cite{Ogutu2016}. 
+There are many reasons why people subdivide land and build
+fences~\cite{Mwangi2007}, though these may change depending on local context.
+Similarly, the risks posed by different fences are ostensibly
+different in different contexts~\cite{Bellard2022}, perhaps even within
+a single ecosystem like the Mara. 
+
+Because of the need to understand land use and
+fence construction on different time, population, and geospatial scales, we
+outline here a self-consistent, two-pronged modeling strategy. One 
+model is intended to understand, or predict alternative, outcomes over 
+longer time scales, and larger population and geospatial scales,
+based on a mean-field policy optimizaiton. This approach would be used to 
+understand how government policies that lasted decades affected the distribution of
+land use, the size of wildlife populations, and the total area fenced, for example.
+
+Of course, these larger-scale dynamics occuring over decades emerges from
+individual-level decisions and local interpersonal interactions, such as 
+when a farmer in the Mara must decide whether to build a fence or not based on
+the amount of wildlife concentration on their land, which is a function of whether or
+not neighbors built fences, joined conservancies, etc.~\cite{}. Local taxes,
+regulations, and other laws could have different effects in different places.
+To account for such local details and predict short-term outcomes in geographic areas
+among fewer people, we also develop a proof-of-concept agent-based model where
+individual-level incentives and interpersonal influence shape fence building
+behaviors, which in turn affect biodiversity, which in turn affects trophic network
+dynamics. 
+
+
+
+
+
+\printbibliography
+
+\end{document}
