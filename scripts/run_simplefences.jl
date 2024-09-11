@@ -44,7 +44,9 @@ function run_default_simplefences(nsteps = 50;
     # individual- and global-level stepping functions 
     # `agent_step!` and `model_step!`, and data collection 
     # specifications, `adata` and `mdata`.
-    agent_df, model_df = run!(model, agent_step!, model_step!, nsteps; adata, mdata)
+    agent_df, model_df = run!(model, agent_step!, model_step!, nsteps; 
+                              adata, mdata)
+
     result_df = innerjoin(agent_df, model_df, on = :step)
 
     # Reshape matrix entries in spatial result_df cells in long format.
@@ -62,9 +64,9 @@ function run_default_simplefences(nsteps = 50;
         CSV.write(map_df_csvname, map_df)
     end
 
-    # if !isnothing(prevalence_csv_name)
-    #     CSV.write(prevalence_csv_name, prevalence_df)
-    # end
+    if !isnothing(prevalence_csv_name)
+        CSV.write(prevalence_csv_name, prevalence_df)
+    end
 
     return prevalence_df, map_df, model
 end
