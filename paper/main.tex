@@ -20,6 +20,7 @@
 \usepackage{dsfont}
 \usepackage{wrapfig}
 \usepackage{authblk}
+\usepackage{booktabs}
 
 \usepackage[sorting=none, style=numeric-comp]{biblatex}
 
@@ -202,7 +203,7 @@ Of course, these larger-scale dynamics occuring over decades emerges from
 individual-level decisions and local interpersonal interactions, such as 
 when a farmer in the Mara must decide whether to build a fence or not based on
 the amount of wildlife concentration on their land, which is a function of whether or
-not neighbors built fences, joined conservancies, etc.~\cite{}. Local taxes,
+not neighbors built fences, joined conservancies, etc. Local taxes,
 regulations, and other laws could have different effects in different places.
 To account for such local details and predict short-term outcomes in geographic areas
 among fewer people, we also develop a proof-of-concept agent-based model where
@@ -211,8 +212,65 @@ behaviors, which in turn affect biodiversity, which in turn affects trophic netw
 dynamics. 
 
 
+\section{Model}
+\label{sec:abm}
+
+\subsection{Model components}
+
+\begin{itemize}
+  \item
+    Landholders (Table~\ref{tab:landholders})
+  \item 
+    Trophic network composed of five ``species'': insect, bird, herbivore,
+    carnivore, and livestock. Of course livestock are a type of herbivore, but
+    we need to separate them so that if they are being hunted by carnivores,
+    for example, this can factor in to landowner decision making. Non-humans
+    have a location, ``energy'' they have to move or give to those who consume
+    them. Livestock are furthermore connected to a landholder, who own them and
+    the land on which they roam.
+\end{itemize}
+
+\begin{table}[h]
+  \caption{\textbf{Landholder variables.} Landholders are allotted a plot of
+  land with livestock and can choose to fence or not.}
+  \label{tab:landholders}
+  \begin{tabular}{cl} \toprule
+    variable & description \\ \midrule  
+    \textsc{holding} & Plot of land where livestock live, held by landholder \\
+    \textsc{livestock} & Collection of herbivores in holding owned by landholder \\
+    \textsc{fenced} & Whether or not landholder's land is fenced \\
+    \textsc{fence\_probability} & Baseline probability a landholder will build a
+    fence around holding \\
+    \bottomrule
+  \end{tabular} 
+\end{table}
+
+\begin{table}[h]
+  \caption{\textbf{Non-human animal variables.} Landholders are allotted a plot of
+  land with livestock and can choose to fence or not.}
+  \label{tab:landholders}
+  \begin{tabular}{cl} \toprule
+    variable & description \\ \midrule  
+    \textsc{position} & Spatial location of animal \\
+    $\Delta$\textsc{energy} & Energy used to live for one time step \\
+    \textsc{energy} & Amount of energy animal has left; animal dies when $<0$ \\
+    \textsc{species} & Animal species: insect, bird, herbivore, carnivore, or
+    livestock \\
+    \textsc{landholder} & Pointer to landholder if animal is livestock; \texttt{NULL}
+    otherwise \\
+    \bottomrule
+  \end{tabular} 
+\end{table}
+
+\subsection{Model dynamics}
+
+\begin{enumerate}
+  \item 
+    Initialize 
+\end{enumerate}
 
 
+\section{Results}
 
 \printbibliography
 
