@@ -18,9 +18,16 @@ plot_prevalences <- function(dynamics_csv = "prevalence.csv",
     # Remove unwanted columns that are not species prevalence.
     filter((variable != "total_grass") & 
            (variable != "total_fenced_area") &
-           (variable != "landholder")) %>%
+           (variable != "landholder") &
+           (variable != "insect"))%>%
     
-    ggplot(aes(x=step, y=value, color=variable)) + geom_line() + mytheme
+    ggplot(aes(x=step, y=value, color=variable)) + 
+      geom_line(linewidth = 1) + 
+      xlab("Time (months)") +
+      ylab("Population") +
+      scale_color_manual(name = "Species",
+                         values = c("goldenrod1", "seagreen2", "pink", "dodgerblue")) +
+      mytheme
   
   ggsave(write_path, width = 7, height = 4.5)
   

@@ -35,10 +35,12 @@ end
     energy::Float64
     Δenergy::Float64
 
+    catch_radius::Float64 = 1.0
+
     # Birth rate can be a function of grass availability for, 
     # e.g., livestock, insects, birds.
     birth_rate::Float64
-
+    
     species::Species
     landholder::Union{Landholder,Nothing} = nothing
 
@@ -89,13 +91,10 @@ function eat_available_prey!(agent, model)
         error("agent species, $(agent.species) has no known prey animals")
     end
 
-    # find available prey
-    # TODO make it prey within a certain larger radius, e.g. within a radius
-    # of five cells, or whatever number of cells, using Agents.nearby_agents()
-    # see https://juliadynamics.github.io/Agents.jl/stable/api/#Nearby-Agents
-    # (in window on other screen).
+    # Find available prey. `catch_radius` is currently set to 5 for all agents.
     available_prey = Iterators.filter(a -> a.species ∈ prey_species,
-                                      agents_in_position(agent.pos, model))
+                                      nearby_agents(agent, model, 
+                                                    agent.catch_radius))
 
     # take one of the available prey at random if any are available
     if !isempty(available_prey)
@@ -128,13 +127,15 @@ function agent_step!(agent, model)
 
     # ...finally, herbivores and carnivores can't go to fenced locations.
     else
-        available_locations = collect(Iterators.filter(pos -> check_pos_available(pos, model), 
+        available_locations = 
+          collect(Iterators.filter(pos -> check_pos_available(pos, model), 
                                                        nearby_positions(agent.pos, model)))
         new_pos = agent.pos
         if !isempty(available_locations)
             new_pos = rand(available_locations)
         end
     end
+
     move_agent!(agent, new_pos, model)
 
     # Feed, depending on species, location, and location's state...
@@ -142,7 +143,7 @@ function agent_step!(agent, model)
     if agent.species ∈ [insect, herbivore, livestock]
         grass_avail = model.grass[agent.pos...]
         Δenergy = agent.Δenergy
-        energy_to_eat = min(20*Δenergy, grass_avail)
+        energy_to_eat = min(1.5*Δenergy, grass_avail)
         model.grass[agent.pos...] -= energy_to_eat
 
     # ...if it is a carnivore, try to eat herbivore or livestock at location...
@@ -157,7 +158,8 @@ function agent_step!(agent, model)
         model.max_id = new_id
         species = agent.species
         new_agent = Critter(new_id, agent.pos, model.init_energy[species],
-                            model.Δenergy[species], model.birth_rate[species],
+                            model.Δenergy[species], model.catch_radius,
+                            model.birth_rate[species],
                             species, agent.landholder)
 
         add_agent!(new_agent, model)
@@ -188,7 +190,9 @@ function livestock_factory!(model, landholder;
     a_idx = length(model.agents) + 1
     pos = rand(landholder.holding)
     new_critter = Critter(a_idx, pos, model.init_energy[livestock],
-                          model.Δenergy[livestock], model.birth_rate[livestock],
+                          model.Δenergy[livestock], 
+                          NaN,
+                          model.birth_rate[livestock],
                           livestock, landholder)
 
     # Create and return new livestock Critter.
@@ -256,29 +260,30 @@ end
 
 
 function initialize_simplefences(;
-        init_pops = Dict(insect => 1000, bird => 300, herbivore => 50, 
-                         carnivore => 25, livestock => 100, landholder => 20),
+      init_pops = Dict(insect => 1000, bird => 300, herbivore => 1000, 
+                       carnivore => 75, livestock => 500, landholder => 20),
 
-        birth_rate = 
-            Dict(insect => 0.02, bird => 0.005, herbivore => 0.01, 
-                 livestock => 0.008, carnivore => 0.008),
+      birth_rate = 
+          Dict(insect => 0.01, bird => 0.001, herbivore => 0.01, 
+               livestock => 0.02, carnivore => 0.005),
 
-        init_energy = 
-            Dict(insect => 0.8, bird => 1.0, herbivore => 5, 
-                 livestock => 5, carnivore => 5),
+      init_energy = 
+          Dict(insect => 0.9, bird => 1.0, herbivore => 10, 
+               livestock => 10, carnivore => 10),
 
-        Δenergy = 
-           Dict(insect => .002, bird => 0.01, herbivore => 0.01, 
-                livestock => 0.02, carnivore => 0.2),
+      Δenergy = 
+         Dict(insect => .008, bird => 0.01, herbivore => 0.1, 
+              livestock => 0.1, carnivore => 0.3),
 
-        space_width = 500,
-        grass_regrowth_rate = 0.1,
-        grass_consumption_rate = 0.2,  # same for livestock and herbivores 
-        plot_size_distro_mean_min1 = 15,
-        insect_grass_coeff = 0.02,
-        init_livestock_per_area = 1,
-        seed = 42,
-        initial_fenced_prob = 0.5
+      space_width = 500,
+      grass_regrowth_rate = 0.1,
+      grass_consumption_rate = 0.5,  # same for livestock and herbivores 
+      plot_size_distro_mean_min1 = 15,
+      insect_grass_coeff = 0.01,
+      init_livestock_per_area = 1,
+      seed = 42,
+      initial_fenced_prob = 0.1,
+      catch_radius = 1.5
     )
 
     dims = (space_width, space_width)
@@ -289,24 +294,25 @@ function initialize_simplefences(;
     # and the time to regrow. Also have static parameter `regrowth_time`.
     # Notice how the properties are a `NamedTuple` to ensure type stability.
     properties = Dict(
-        :space_width => space_width,
-        :grass => ones(Float64, dims),
-        :grass_regrowth_rate => 0.1,
-        :landholders => [],
-        :plot_size_distro => Poisson(plot_size_distro_mean_min1),
-        :available_cells => [(x, y) for x in 1:space_width for y in 1:space_width],
-        # Coefficient relating number of insects to vegetation growth (i.e., due
-        # to presence of pollinators.
-        :insect_grass_coeff => insect_grass_coeff,
-        :init_livestock_per_area => init_livestock_per_area,
-        :init_pops => init_pops,
-        :birth_rate => birth_rate,
-        :init_energy => init_energy,
-        :Δenergy => Δenergy,
-        :total_fenced_area => 0.0,
-        :initial_fenced_prob => initial_fenced_prob,
-        :total_grass => 0.0,
-        :max_id => 0
+      :space_width => space_width,
+      :grass => ones(Float64, dims),
+      :grass_regrowth_rate => 0.1,
+      :landholders => [],
+      :plot_size_distro => Poisson(plot_size_distro_mean_min1),
+      :available_cells => [(x, y) for x in 1:space_width for y in 1:space_width],
+      # Coefficient relating number of insects to vegetation growth (i.e., due
+      # to presence of pollinators.
+      :insect_grass_coeff => insect_grass_coeff,
+      :init_livestock_per_area => init_livestock_per_area,
+      :init_pops => init_pops,
+      :birth_rate => birth_rate,
+      :init_energy => init_energy,
+      :Δenergy => Δenergy,
+      :total_fenced_area => 0.0,
+      :initial_fenced_prob => initial_fenced_prob,
+      :total_grass => 0.0,
+      :max_id => 0,
+      :catch_radius => catch_radius
     )
 
     model = ABM(Critter, space;
@@ -342,12 +348,15 @@ function initialize_critters!(model)
     critter_idx = 1
     println("Going to create $(model.init_pops[herbivore]) herbivores!")
     for species in instances(Species)
-        # For each species, initialize the init population size specified in init_pops.
+        # For each species, initialize the init population size 
+        # specified in init_pops.
         if species ∉ [landholder, livestock]
             for ii in 1:model.init_pops[species]
                 pos = random_position(model)
                 new_agent = Critter(critter_idx, pos, model.init_energy[species], 
-                                    model.Δenergy[species], model.birth_rate[species],
+                                    model.Δenergy[species], 
+                                    model.catch_radius,
+                                    model.birth_rate[species],
                                     species, nothing)
 
                 add_agent!(new_agent, model)

@@ -175,6 +175,8 @@ function fences_movie(max_steps = 50,
                       prevalence_figure_name = "figures/prevalence_dynamics.pdf",
                       movie_file = "movie/default.mp4",
                       framerate = 4, 
+                      drought_step = nothing, 
+                      drought_grass_kill_prob = 0.75,
                       model_kwargs...)
 
     # Clear previous tmp directories.
@@ -187,6 +189,7 @@ function fences_movie(max_steps = 50,
 
     # Initialize tstep at 2 from previous call then build frames.
     tstep = steps_per_frame
+    not_yet_droughted = true
     while tstep < max_steps
 
         prevalence_df, model_to_restart = 
@@ -196,6 +199,20 @@ function fences_movie(max_steps = 50,
                            model_kwargs...)
 
         tstep += steps_per_frame
+
+        # Check if drought conditions need to be applied.
+        if ((!isnothing(drought_step)) && 
+            (not_yet_droughted && 
+            tstep > drought_step))
+
+          for p in positions(model_to_restart)
+            if rand() < drought_grass_kill_prob
+              model_to_restart.grass[p...] = 0.0
+            end
+          end
+
+          not_yet_droughted = false
+        end
     end
 
     # Plot species prevalence dynamics using R before making movie.
@@ -211,9 +228,9 @@ function fences_movie(max_steps = 50,
     p = sortperm(parse.(Int, frame_idxs))
     frame_names = frame_names[p]
 
-    println()
-    println("Made it here!")
-    println()
+    # println()
+    # println("Made it here!")
+    # println()
 
     # Set up movie encoder.
     encoder_options = (crf=23, preset="medium")
