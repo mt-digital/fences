@@ -2,7 +2,7 @@
 
 Agent-based model and analysis code to simulate the causes and effects of different choices of land ownership, cattle production, and fencing decisions on biodiversity and trophic networks, meant to represent threats to biodiversity in Kenya. This is currently just a prototype. Model code is located in [src/simplefences.jl](src/simplefences.jl) and analysis code is in [scripts/plot.R](scripts/plot.R).
 
-This code is a product of the Santa Fe Institute workshop: "Biodiversity Protection – Forecasting Success and Reversing Challenges in a Complex Socio-economic-ecological World".
+This code is a product of the Santa Fe Institute workshop, [Biodiversity Protection – Forecasting Success and Reversing Challenges in a Complex Socio-economic-ecological World](https://www.santafe.edu/events/biodiversity-protection-forecasting-success-and-reversing-challenges-complex-socio-economic-ecological-world).
 
 ## Get the code and install dependencies
 
