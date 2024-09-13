@@ -28,8 +28,6 @@
 \addbibresource{this.bib}
 
 
-\setcounter{MaxMatrixCols}{10}
-
  \definecolor{red}{rgb}{1.0,0.0,0.0}
  \def\red#1{{\textcolor{red}{#1}}}
  \definecolor{blu}{rgb}{0.0,0.0,1.0}
@@ -39,69 +37,10 @@
  \definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
 \def\dvio#1{{\textcolor{darkviolet}{#1}}}
 
-% \def\Re{\operatorname{Re}}
-\sloppy
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\newcommand{\ud}{{\, \mathrm{d}}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\N}{\mathbb{N}}
 
 
+% \parskip=5pt
 
-\newtheoremstyle{mytheorem}% name
-{6pt}%Space above
-{6pt}%Space below
-{\itshape}%Body font
-{-0pt}%Indent amount 1
-{\large \scshape}% Theorem head font
-{}%Punctuation after theorem head
-{1em}%Space after theorem head 2
-{}%Theorem head spec (can be left empty, meaning "normal")
-
-\newtheoremstyle{myremark}% name
-{6pt}%Space above
-{10pt}%Space below
-{\rm}%Body font
-{-0pt}%Indent amount 1
-{\large \scshape}% Theorem head font
-{}%Punctuation after theorem head
-{1em}%Space after theorem head 2
-{}%Theorem head spec (can be left empty, meaning "normal")
-
-
-
-
-\theoremstyle{mytheorem}
-\newtheorem{Theorem}{Theorem}
-\newtheorem{Definition}[Theorem]{Definition}
-\newtheorem{Proposition}[Theorem]{Proposition}
-\newtheorem{Lemma}[Theorem]{Lemma}
-\newtheorem{Corollary}[Theorem]{Corollary}
-\newtheorem{Hypothesis}[Theorem]{Hypothesis}
-\newtheorem{Corollaryoftheproof}[Theorem]{Corollary (of the proof)}
-
-
-\theoremstyle{myremark}
-\newtheorem{Remark}{Remark}
-\newtheorem{Example}{Example}
-\newtheorem{Notation}{Notation}
-
-
-
-
-
-% \bibpunct{(}{)}{; }{a}{,}{,}
-% \setcitestyle{authoryear}    % Imposta lo stile di citazione come autore-anno
-\parskip=5pt
-
-% \linespread{1.5}\selectfont
-
-% \usepackage{float}
-% \usepackage{caption}
-% \captionsetup[subfigure]{position=bottom}
-% \usepackage{subfig}
-% \usepackage{subfloat}
 
 \definecolor{mt-orange}{RGB}{240, 96, 0}
 \newcommand{\mt}[1]{{\textcolor{mt-orange} {({\tiny MT:} #1)}}}
@@ -110,37 +49,38 @@
 
 \begin{document}
 
-\title{Group-level homophily in metapopulation social networks can optimize the diffusion of innovations}
+\title{Overcoming uncertainty and complexity, impediments to biodiversity protection in
+the Greater Mara, Kenya, and similar ecosystems}
 
 \author{Matthew A. Turner$^{*,1}$, SFI Biodiversity Team$^{2}$ \\ 
-  {\small $^1$Stanford Doerr School of Sustainability,
-Environmental Social Sciences, Stanford University, USA \\ \vspace{0.5em}
+  {\small $^1$ Environmental Social Sciences, Stanford Doerr School of Sustainability, Stanford University, USA \\ \vspace{0.5em}
 $^2$Earth} \\ \vspace{0.5em}
 {\small $^*$Correspondence: \href{mailto:maturner@stanford.edu}{maturner@stanford.edu}}}
 \maketitle
 
 \begin{abstract}
   \noindent
-  In the Greater Mara, Kenya, across the past few decades, conservationists and
-  policymakers have struggled to develop policies and practices that are robust to
-  predictable and unpredictable impediments, and effectively optimize precious
-  political, legal, and enforcement resources for biodiversity conservation.
-  This is one of many situations worldwide where 
-  biodiversity conservation struggles to meet critical targets, including
-  the United Nations' Sustainable Development Goal 15, to protect, restore,
-  and promote sustainable use of terrestrial ecosystems (Goal
-  15).  We suggest that this is because any decades-long policy-based course of
-  action is subject to uncertainty, stochasticity,
-  and path-dependence of outcomes characteristic of the socio-ecological systems in
-  which the policies. We propose a multi-level modeling approach that optimizes policies 
-  on the time scale of 
-  about one century and spatial scale of the Greater Mara Ecosystem at a higher level,
-  and at a lower level models landholder social learning and decision making and
-  local trophic networks events over time scales of about ten years and
-  spatial scales of ~100 square kilometers. 
-  We believe these judicious simplifications of the socio-ecological system and incorporation
-  in a mechanistic model may be used to design interventions to reduce fencing, 
-  which is a known threat to biodiversity, especially in the Greater Mara.
+  Over the past few decades, conservationists and policymakers have struggled
+  to achieve biodiversity protection goals.  We suggest that this is because
+  any decades-long policy for biodiversity protection is subject to
+  uncertainty arising from complexty inherent in socio-ecological systems
+  needing biodiveristy protection. For example, in the past several decades in
+  the Greater Mara ecosystem, unregulated fence construction has reduced
+  biodiversity protection  by blocking migratory corridors for animals like
+  ungulates threatened with massive die-off if they cannot migrate to find
+  water and food in drought conditions.  To deal with uncertainty and
+  complexity, we propose a multi-level modeling approach that combines
+  long-term, large-scale policy optimization with shorter-term, local-scale
+  behavioral and ecological simulations.  At time scales of about a century,
+  and ecosystem-level spatial scales, we propose using dynamic optimization
+  for long-term planning. To complement this, we propose using agent-based
+  models predict the effects of these policies on landholder decision making
+  in explicitly-modeled socio-ecological contexts over time scales of about
+  ten years and ~100 square-kilometer spatial scales. Using the Greater Mara
+  as a case study, in this paper we specifically develop the agent-based 
+  model component to demonstrate how scientific, mechanistic models can help
+  design and evaluate interventions to reduce fencing and support biodiversity
+  protection.
 \end{abstract}
 
 
@@ -152,14 +92,16 @@ due to expanding human populations, overexploitation of land and game animals,
 climate change and pollution, and invasive species encroachment~\cite{Bellard2022}.
 Government policy, social influence, and personal preference all affect land use
 decisions on different time, population, and geospatial scales 
-(plant crops, raise cattle, etc.)~\cite{Eitzel2020,Løvschal2021}.
+(plant crops, raise cattle, etc.)~\cite{Eitzel2020,Løvschal2021,Richerson2024}.
+
 Fence construction is one important anthropocene feature that threatens
 biodiversity~\cite{Packer2013} and whole 
 ecosystems~\cite{Løvschal2017,Løvschal2022}. 
 In turn, changes in biodiversity affect land use, resulting in a complex, coupled
-dynamical system. In the Mara, 
-ungulates are particularly threatened~\cite{Ogutu2009}, with fencing being primary
-contributor to wildlife declines generally~\cite{Ogutu2016}. 
+dynamical system. In the Greater Mara ecosystem, in Keyna, 
+ungulates are particularly threatened~\cite{Ogutu2009}, with fencing being a 
+primary driver of declining biodiversity by cutting off otherwise accessible 
+migration routes used in times of drought~\cite{Ogutu2016}. 
 There are many reasons why people subdivide land and build
 fences~\cite{Mwangi2007}, though these may change depending on local context.
 Similarly, the risks posed by different fences are ostensibly
@@ -168,50 +110,38 @@ a single ecosystem like the Mara.
 
 Because of the need to understand land use and
 fence construction on different time, population, and geospatial scales, we
-outline here a self-consistent, two-pronged modeling strategy. One 
-model is intended to understand, or predict alternative, outcomes over 
-longer time scales, and larger population and geospatial scales,
-based on a mean-field policy optimizaiton. This approach would be used to 
-understand how government policies that lasted decades affected the distribution of
-land use, the size of wildlife populations, and the total area fenced, for example.
-
-Of course, these larger-scale dynamics occuring over decades emerges from
+outline here one component of a modeling strategy aimed at taming the 
+complexity inherent in
+biodiversity protection over long time scales. This modeling approach 
+is intended to complement a long-term optimization 
+approach that predicts outcomes over
+time scales on the order of one century, and over large population and geospatial
+scales on the order of an entire ecosystem. Such large-/long-scale approaches
+could be used to predict and plan how government policies will affect the distribution of
+land use, the size of wildlife populations, and the total area fenced over
+several decades.
+Of course these coarse-grained dynamics occur over decades and emerge from
 individual-level decisions and local interpersonal interactions, such as 
 when a farmer in the Mara must decide whether to build a fence or not based on
 the amount of wildlife concentration on their land, which is a function of whether or
-not neighbors built fences, joined conservancies, etc. Local taxes,
-regulations, and other laws could have different effects in different places.
-To account for such local details and predict short-term outcomes in geographic areas
-among fewer people, we also develop a proof-of-concept agent-based model where
-individual-level incentives and interpersonal influence shape fence building
-behaviors, which in turn affect biodiversity, which in turn affects trophic network
-dynamics. 
+not neighbors built fences, joined conservancies, etc. 
 
-There are predictable impediments to biodiversity: these
-include personal-level cognitive biases or incentives of voters and policymakers
-such as the temptation of lucrative poaching or illegal grazing.  Another
-predictable impediment is if social networks are not sufficiently structured,
-biodiversity-protecting behaviors may fail to percolate through relevant
-populations via interpersonal observation and social. These impediments are indeed
-\emph{predictable} in some sense, but only in contexts that meet some set of
-theoretical assumptions and conditions, with observations necessarily limited to a
-finite number of experimental laboratory or real-world settings. 
-
-We clearly cannot
-perform real-world experiments on the Mara, or any other biodiversity preserve,
-because we do not get more than one, and it must be saved now. Therefore we 
-develop a dual-pronged mechanistic modeling approach, where one prong attempts
-to optimize long-term outcomes on the scale of one century, 
-using optimal planning theory. The other approach
-is more local in time and space, using agent-based models to represent 
-roughly one decade of decision-making, climate variance, trophic networks, and
-fencing decisions. Such mechanistic modeling enables us to predict how the past or future may have been or
-could be different depending on contextual legal, environmental, and behavioral
-factors~\cite{Turner2022}. Here we develop a
-strategy for anticipating a range of possible outcomes for biodiversity
-interventions by simulating the complex local-, individual-, and relatively
-shorter time-scale dynamics of stakeholder decision-making and trophic networks
-that are affected by regional, state, or national policy. 
+Therefore, here, we outline a complementary, more localized agent-based
+modeling framework to predict fence building, specifically, and its effect on
+trophic dynamics and biodiversity. This is a proof-of-concept agent-based
+model where individual-level incentives and interpersonal influence can be
+incorporated to drive fence building decisions, which in turn affect
+biodiversity, which in turn affects trophic network dynamics. 
+Such an approach is necessary because we clearly cannot perform real-world
+experiments on the Mara, or any other biodiversity preserve, because we do not
+get more than one, and it must be saved now. Such mechanistic modeling enables
+us to predict how the past or future may have been or could be different
+depending on contextual legal, environmental, and behavioral
+factors~\cite{Turner2022}. This approach provides a strategy for anticipating
+a range of possible outcomes for biodiversity interventions by simulating the
+complex local-, individual-, and relatively shorter time-scale dynamics of
+stakeholder decision-making and trophic networks that are affected by
+regional, state, or national policy. 
 
 For instance, we may use this modeling approach to
 demonstrate that a push to incorporate more rangeland into conservancies can tip
@@ -222,39 +152,62 @@ drought, many landholders had been fencing their land over the course of many
 years, which had not been a problem since water had been plentiful. When the
 drought hit, wildebeest needed to migrate for water, but were unable to due to
 fence construction that only became an obvious problem after that tragic event.
-We explain how agent-based modeling can represent local dynamics, while these
-dynamics are constrained by national- and regional-level policy. These policies 
-are aimed at optimizing biodiversity outcomes over longer time scales, 
-which could be calculated, for example obtained through dynamic
-optimization that accounts for actor and stakeholder incentives. More local-,
-shorter time-scale predictions can be used to update optimal policies, which
-in turn generate new smaller-scale simulation outcomes, and so on so that
-the models at each scale contribute to a strategy for implementing long-term
-\emph{and} adaptive policy to protect biodiversity.
+Our modeling framework is intended to predict such tragedies before they occur. 
+These more localized, shorter time-scale predictions could in turn be used to
+update optimal policies, which in turn generate new smaller-scale simulation
+outcomes, and so on, so that the models at each scale contribute to a strategy
+for implementing long-term \emph{and} adaptive policy to protect biodiversity.
 
-In the rest of this modeling sketch I explain an agent-based model for more
-local, shorter time-scale modeling of climate variance, fencing decisions and
-trophic networks. 
+In the rest of this brief report I introduce this agent-based model. The
+model represents ``decision making'' among dozens of landholders, and is
+capable of representing hundreds or thousands of livestock and other non-human
+animals existing over grids with tens or hundreds of thousands of cells that
+can run over dozens of months in minutes or less on my MacBook Air laptop.
+Model dynamics can be analyzed with custom-made movies of fence building and
+prevalence dynamics in time series analyses. Despite these achievements, it
+is still just a toy prototype model in the sense that fencing decisions are
+made randomly and trophic and environmental dynamics have been made \emph{ad
+hoc} in order to get some minimally interesting dynamics. With the guidance of
+the Santa Fe group, and potentially other experts, this model can be made more
+scientific, with modeling decisions based on more refined, agreed-upon
+scientific questions.
 
 \section{Model}
 \label{sec:abm}
 
-To understand how fencing decisions may increase the risk of biodiversity loss,
-we developed an agent-based model representing vegetation, a simple trophic network
-(Figure~\ref{fig:TrophicNetwork}),
-landholders (Table~\ref{tab:landholders}), their livestock, and, most importantly, 
-their fences. 
+To understand how fencing decisions may increase the risk of biodiversity
+loss, we developed an agent-based model representing vegetation, a simple
+trophic network (Figure~\ref{fig:composition}A), landholders
+(Table~\ref{tab:landholders}), their livestock, and, most importantly, their
+fences. Over time, trophic dynamics play out, most notably with livestock and
+other herbivores consuming grass and carnivores hunting and consuming
+livestock and herbivores. Outcomes are analyzed by inspecting the prevalence
+of different ``species'' over time (Figure~\ref{fig:composition}B) and 
+monthly maps of vegetation availability and (Figure~\ref{fig:composition}C). 
+These model features are explained in more detail in the rest of this section.
 
 
 \subsection{Model components}
 
+The model is composed, first, of landholders, who occupy plots of land, with
+vegetation growing on each cell of a square grid. On this same grid, there are
+five ``species'' of animals: ``carnivores'', ``livestock'', ``herbivores''
+(free-roaming non-livestock), ``birds'', and ``insects'' (not shown in
+analyses). Currently the birds and insects play no interesting role, but they
+are included since the big picture goal is protecting biodiversity, and I
+wanted to include more biodiversity in the trophic network.
+
 \subsubsection{Landholders}
 
-\begin{itemize}
-  \item
-    Landholders (Table~\ref{tab:landholders})
-  \item 
-\end{itemize}
+Landholders are agents who own a plot of land and livestock, and may have
+enclose their land with a fence (pink polygons in
+Figure~\ref{fig:composition}B). They are assigned a probability of building a 
+fence on a given time step, which for this toy model is set constant for the
+entire simulation. In the future this probability would be tied to
+non-livestock herbiveore encroachment, carnivore predation of livestock, new
+legislation, and social learning of other landholder's fencing decisions, e.g., 
+through observation or direct instruction. 
+Landholder variables are summarized below in Table~\ref{tab:landholders}.
 
 \begin{table}[h]
   \caption{\textbf{Landholder variables.} Landholders are allotted a plot of
@@ -278,17 +231,20 @@ carnivore, and livestock. Of course livestock are a type of herbivore, but
 we need to separate them so that if they are being hunted by carnivores,
 for example, this can factor in to landowner decision making. 
 
-\begin{figure}
-  \caption{\textbf{Trophic network illustration.}}
-  \centering
-    \includegraphics[width=0.375\textwidth]{Figures/TrophicNetwork.pdf}
-  \label{fig:TrophicNetwork}
-\end{figure}
-
-Non-humans
-have a location, ``energy'' they have to move or give to those who consume
-them. Livestock are furthermore connected to a landholder, who own them and
-the land on which they roam.
+All members of the trophic network have a location, ``energy'' 
+they have to move or give to those who
+consume them. In the code, each animal is an instance of the \texttt{Critter} 
+class (see attributes of this class in Table~\ref{tab:nonhuman}). 
+Livestock belong to a landholder, who own them
+and the land on which they roam. Whether or not the landholder has fenced their
+holding, livestock are constrained to stay on the landholder's land. If a fence
+has been built, carnivores cannot predate the livestock, and non-livestock
+herbivores cannot encroach on that land. Carnivores are initialized with a 
+\emph{catch radius} that specifies how close prey must be for them to
+successfully capture and consume it. Herbivores and livestock gain energy from 
+eating grass. Herbivores and carnivores must eat sufficient amounts of
+``energy'' in order to keep on living, otherwise they die. All animals
+reproduce with a certain probability.
 
 \begin{table}[h]
   \caption{\textbf{Non-human animal variables.} All non-human species have
@@ -312,27 +268,123 @@ the land on which they roam.
 
 \subsection{Model dynamics}
 
+The model is initialized with a grid of
+``vegetation'', or ``grass''; a given number of animals of each model
+species, a certain number of landholders, and each landholder either having
+a fence or not, depending on the probability \texttt{initial\_fence\_prob}.
+There are many model parameters necessary to initialize a model; for the
+purposes of this brief report please see the \href{model initialization code
+on GitHub}{https://github.com/mt-digital/fences} for a full listing.  
 
-\section{Results}
+On each time step, meant to represent about one month, 
+each landholder may choose to build a fence, which they do with
+probability \texttt{fence\_probability}. No animals may pass through a
+fence except for birds and insects. 
+Every animal attempts to move to a new place on the grid.
+Herbivores and livestock eat whatever grass is available. Grass grows back as
+time progresses. Carnivores eat
+one herbivore or livestock if there are any within the
+\texttt{catch\_radius}. If there are more than one within the catch
+radius, one is chosen at random to be consumed. 
 
-\begin{figure}
-  \caption{\textbf{Spatial time series of fence construction.} Fences (pink
-  polygon overlays) are constructed over time in response to carnivore
-  predation of livestock and encroachment by other herbivores. Vegetation is
-  shown in green, with darker cells indicating less vegetation due to consumption
-  by livestock and other herbivores. Time $t$ is in months.}
+To represent a drought, some percentage (currently 75\%) of all grass cells go
+0 grass (as occurs at $t=42$ in Figure~\ref{fig:composition}C).
+
+
+\subsection{Outcome measures}
+
+Currently the primary outcome measures are the prevalence of each animal in the
+grid, which is implicitly a measure of biodiversity. One can inspect the fence
+distribution in the grid maps, but we have not yet analyzed total fence
+perimeter, or area fenced, or other summary measure of fence prevalence. 
+
+In the future, we would want to represent the mass ungulate die-off mentioned
+in the Introduction. This tragic die-off occurred as a consequence of drought
+following large expansions in fencing. We would thus want to measure herbivore
+survivability following drought as a function of different socio-ecological 
+contexts leading to different fence prevalences.
+
+
+\subsection{Implementation}
+
+Our agent-based model is implemented in the Julia programming 
+language~\cite{Perkel2019} using the Agents.jl package~\cite{Datseris2022}. 
+We used R~\cite{RLang} and the ggplot2~\cite{Wickham2016} package for
+visualization and analysis. The simulation code is publicly available on
+GitHub:~\url{https://github.com/mt-digital/fences}.
+
+
+\begin{figure}[h]
+  \caption{\textbf{Model trophic network (A),
+      model biodiversity dynamics (B), and socio-environmental dynamics of 
+    fence construction and drought (C).} In the biodiversity dynamics (B), a
+    simulated drought at time $t=42$ (see grass die-off in center panel of C)
+    destabilizes the ecosystem and herbivore populations crash without
+    recovery, while livestock also crashes, but recovers.  Fences (pink polygon
+    overlays) are constructed over time in response to carnivore predation of
+    livestock and encroachment by other herbivores. Vegetation is shown in
+    green, with darker cells indicating less vegetation due to consumption by
+    livestock and other herbivores; or also due to drought, which occurs at
+    $t=42$ in (C). Time $t$ is in months. 
+}
   \centering
-  \includegraphics[width=0.9\textwidth]{Figures/fencing_series_10y.pdf}
-  \label{fig:fence_series}
+  \includegraphics[width=0.95\textwidth]{Figures/all_draft_figs.pdf}
+  \label{fig:composition}
 \end{figure}
 
 
-\begin{figure}
-  \caption{\textbf{Biodiversity prevalence dynamics.}}
-  \centering
-    \includegraphics[width=0.7\textwidth]{Figures/prevalence_dynamics.pdf}
-  \label{fig:prevalence_dynamics}
-\end{figure}
+\section{Analysis (sketch)}
+
+We sketch here what our modeling framework enables through a prototype, toy
+analysis of trophic and environmental dynamics following a drought. In our
+model a drought is modeled by ``killing'' a fraction of the vegetation,
+setting that fraction's ``grass'' content to 0.  
+
+First, we initialized a 200x200 grid where vegetation in each cell is set to
+its maximum of 1.0 (Figure~\ref{fig:composition}C, left panel). There are
+twenty landholders in this model, five of which begin with fenced land. At
+time $t=42$ a drought hits the landscape, represented by 75\% of all 
+vegetation cells are set to 0 (Figure~\ref{fig:composition}C, center panel). 
+By this time, $t=42$, almost all fences have
+been constructed around the landholdings, with one more being constructed at 
+$t=84$, where we can see vegetation has started to regrow following the
+simulated drought. 
+
+The drought does not have immediate effects on herbivore (such as ungulates) 
+prevalence, but eventually does lead to a crash and decline of herbivore
+populations around $t=100$. Livestock suffer a similar crash, but are
+protected from predation and do not continue to decline following the crash
+(Figure~\ref{fig:composition}B).
+
+
+\section{Discussion}
+
+We developed a spatial model of environmental and trophic dynamics
+that depend on fencing decisions by landholders. The model can track
+the interactions of thousands of animals, and the behavior of dozens of
+landholders. 
+
+A current challenge in using the model is the requirement and tuning of 
+several parameters. There are still more parameters in the model code
+than included in this draft for the sake of brevity. This appears to be
+unavoidable. Still, some thought should be put in to consider what's
+necessary in this model in light of a possible goal of this model to 
+understand the increase in risk of massive ungulate die-off.  
+
+Fence construction in the model is currently probabilistic. This is fine
+for a zeroth approximation. In future iterations predation, encroachment,
+legislation, or observing or hearing about other landholders nearby or 
+more distant family
+members~\cite{Pisor2024} construct fences could increase
+the probability a landholder builds a fence.
+
+This approach provides a framework for taming inherent complexity in
+socio-economic systems by combining cultural evolution approaches to
+socially-influenced decision making~\cite{PisorLansingMagargal2023},
+which could provide a foundation for a more expansive application of cultural
+evolutionary theory to the socio-ecological system of biodiversity
+protection in the Greater Mara and similar 
+ecosystems~\cite{Brooks2018,Currie2024}.
 
 
 \printbibliography
